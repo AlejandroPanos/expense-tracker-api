@@ -1,5 +1,6 @@
 from database import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Enum
+from sqlalchemy.orm import relationship
 import enum
 
 
@@ -21,9 +22,17 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     phone_number = Column(String, unique=True, nullable=False)
 
+    category = relationship("Category", back_populates="owner")
+
 
 class Category(Base):
     __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    owner_id = Column(Integer, ForeignKey("user.id"))
+
+    owner = relationship("User", back_populates="category")
 
 
 class Expense(Base):
