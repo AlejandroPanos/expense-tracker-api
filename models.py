@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Enum
+from sqlalchemy import Column, String, Boolean, ForeignKey, Enum
 from pydantic import EmailStr, PositiveInt, PositiveFloat, FutureDate
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from sqlalchemy.orm import relationship
