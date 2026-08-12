@@ -26,6 +26,7 @@ class User(Base):
 
     category = relationship("Category", back_populates="owner")
     expense = relationship("Expense", back_populates="owner")
+    budget = relationship("Buget", back_populates="owner")
 
 
 class Category(Base):
@@ -37,6 +38,7 @@ class Category(Base):
 
     owner = relationship("User", back_populates="category")
     expense = relationship("Expense", back_populates="category")
+    budget = relationship("Budget", back_populates="category")
 
 
 class Expense(Base):
@@ -55,3 +57,11 @@ class Expense(Base):
 
 class Budget(Base):
     __tablename__ = "budgets"
+
+    id = Column(PositiveInt, primary_key=True, index=True)
+    owner_id = Column(PositiveInt, ForeignKey("user.id"))
+    category_id = Column(PositiveInt, ForeignKey=("category.id"))
+    monthly_limit = Column(PositiveInt, nullable=False)
+
+    owner = relationship("User", back_populates="budget")
+    category = relationship("Category", back_populates="budget")
