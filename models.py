@@ -33,7 +33,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    owner_id = Column(Integer, ForeignKey=("user.id"))
+    owner_id = Column(Integer, ForeignKey=("users.id"))
 
     owner = relationship("User", back_populates="category")
     expense = relationship("Expense", back_populates="category")
@@ -47,8 +47,8 @@ class Expense(Base):
     amount = Column(Float, nullable=False)
     description = Column(String, nullable=False)
     date = Column(Date, nullable=False)
-    owner_id = Column(Integer, ForeignKey=("user.id"))
-    category_id = Column(Integer, ForeignKey=("category.id"))
+    owner_id = Column(Integer, ForeignKey=("users.id"))
+    category_id = Column(Integer, ForeignKey=("categories.id"))
 
     owner = relationship("User", back_populates="expense")
     category = relationship("Category", back_populates="expense")
@@ -58,8 +58,8 @@ class Budget(Base):
     __tablename__ = "budgets"
 
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("user.id"))
-    category_id = Column(Integer, ForeignKey=("category.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    category_id = Column(Integer, ForeignKey=("categories.id"))
     monthly_limit = Column(Integer, nullable=False)
 
     owner = relationship("User", back_populates="budget")
