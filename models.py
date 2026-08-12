@@ -19,7 +19,7 @@ class User(Base):
     last_name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.user)
-    is_active = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=True, nullable=False)
     phone_number = Column(String, unique=True, nullable=False)
 
     categories = relationship("Category", back_populates="owner")
@@ -32,7 +32,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     owner = relationship("User", back_populates="categories")
     expenses = relationship("Expense", back_populates="category")
@@ -46,8 +46,8 @@ class Expense(Base):
     amount = Column(Float, nullable=False)
     description = Column(String, nullable=False)
     date = Column(Date, nullable=False)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    category_id = Column(Integer, ForeignKey("categories.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
 
     owner = relationship("User", back_populates="expenses")
     category = relationship("Category", back_populates="expenses")
@@ -57,9 +57,9 @@ class Budget(Base):
     __tablename__ = "budgets"
 
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    category_id = Column(Integer, ForeignKey("categories.id"))
-    monthly_limit = Column(Integer, nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
+    monthly_limit = Column(Float, nullable=False)
 
     owner = relationship("User", back_populates="budgets")
     category = relationship("Category", back_populates="budgets")
