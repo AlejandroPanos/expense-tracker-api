@@ -1,6 +1,5 @@
 from database import Base
-from sqlalchemy import Column, String, Boolean, ForeignKey, Enum
-from pydantic import EmailStr, PositiveInt, PositiveFloat, FutureDate
+from sqlalchemy import Column, Integer, Float, Date, String, Boolean, ForeignKey, Enum
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from sqlalchemy.orm import relationship
 import enum
@@ -14,8 +13,8 @@ class UserRole(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(PositiveInt, primary_key=True, index=True)
-    email = Column(EmailStr, unique=True, nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, nullable=False)
     username = Column(String, unique=True, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
@@ -32,9 +31,9 @@ class User(Base):
 class Category(Base):
     __tablename__ = "categories"
 
-    id = Column(PositiveInt, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    owner_id = Column(PositiveInt, ForeignKey("user.id"))
+    owner_id = Column(Integer, ForeignKey("user.id"))
 
     owner = relationship("User", back_populates="category")
     expense = relationship("Expense", back_populates="category")
@@ -44,12 +43,12 @@ class Category(Base):
 class Expense(Base):
     __tablename__ = "expenses"
 
-    id = Column(PositiveInt, primary_key=True, index=True)
-    amount = Column(PositiveFloat, nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    amount = Column(Float, nullable=False)
     description = Column(String, nullable=False)
-    date = Column(FutureDate, nullable=False)
-    owner_id = Column(PositiveInt, ForeignKey("user.id"))
-    category_id = Column(PositiveInt, ForeignKey=("category.id"))
+    date = Column(Date, nullable=False)
+    owner_id = Column(Integer, ForeignKey("user.id"))
+    category_id = Column(Integer, ForeignKey=("category.id"))
 
     owner = relationship("User", back_populates="expense")
     category = relationship("Category", back_populates="expense")
@@ -58,10 +57,10 @@ class Expense(Base):
 class Budget(Base):
     __tablename__ = "budgets"
 
-    id = Column(PositiveInt, primary_key=True, index=True)
-    owner_id = Column(PositiveInt, ForeignKey("user.id"))
-    category_id = Column(PositiveInt, ForeignKey=("category.id"))
-    monthly_limit = Column(PositiveInt, nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("user.id"))
+    category_id = Column(Integer, ForeignKey=("category.id"))
+    monthly_limit = Column(Integer, nullable=False)
 
     owner = relationship("User", back_populates="budget")
     category = relationship("Category", back_populates="budget")
