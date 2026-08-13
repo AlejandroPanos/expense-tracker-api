@@ -32,3 +32,8 @@ class CreateUserRequest(BaseModel):
     role: str
     is_active: bool
     phone_number: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
