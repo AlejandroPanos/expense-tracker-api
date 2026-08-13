@@ -21,3 +21,14 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecaed="auto")
 oath2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
+
+
+class CreateUserRequest(BaseModel):
+    email: str
+    username: str
+    first_name: str
+    last_name: str
+    hashed_password: str
+    role: str
+    is_active: bool
+    phone_number: str
