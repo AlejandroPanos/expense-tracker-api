@@ -20,26 +20,30 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
+# We create the context to tell our app which algorithm to use to encrypt the passwords
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# This is a dependency that allows fastapi to figure the route where our JWT will be
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
+# This is the Pydantic schema that is expected in the request body
 class CreateUserRequest(BaseModel):
     email: str
     username: str
     first_name: str
     last_name: str
-    hashed_password: str
-    role: str
-    is_active: bool
+    password: str
     phone_number: str
 
 
+# This is the response schema and it will contain the JWT token
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 
+# Get the current session's db and get the dependency to pass onto each route that needs it
 def get_db():
     db = SessionLocal()
     try:
