@@ -8,6 +8,7 @@ from passlib.context import CryptContext
 from database import SessionLocal
 from starlette import status
 from jose import jwt, JWTError
+from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os
 
@@ -45,3 +46,6 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+db_dependency = Annotated[Session, Depends(get_db)]
