@@ -55,7 +55,9 @@ def get_db():
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
+###############
 ### Helpers ###
+###############
 def authenticate_user(username: str, password: str, db):
     user = db.query(Users).filter(Users.username == username).first()
 
@@ -91,3 +93,31 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials."
         )
+
+
+##############
+### Routes ###
+##############
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create_user(db: db_dependency, user: CreateUserRequest):
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User details are incomplete",
+        )
+
+    create_user_model = Users(
+        email=user.email,
+        username=user.username,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        hashed_password=bcrypt_context.hash(user.password),
+        role=user.role,
+        is_active=True,
+        phone_number=user.phone_number,
+    )
+
+    db.add(create_user_model)
+    db.commit()
+
+    return create_user_model
