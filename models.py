@@ -9,7 +9,7 @@ class UserRole(str, enum.Enum):
     admin = "admin"
 
 
-class User(Base):
+class Users(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
-from models import User
+from models import Users
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from database import SessionLocal
@@ -53,3 +53,16 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
+
+
+### Helpers ###
+def authenticate_user(username: str, password: str, db):
+    user = db.query(Users).filter(Users.username == username).first()
+
+    if not user:
+        return False
+
+    if not bcrypt_context.verify(password, user.hashed_password):
+        return False
+
+    return user
