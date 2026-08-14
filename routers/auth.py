@@ -72,3 +72,22 @@ def create_access_token(username: str, id: int, role: str, expire_delta: timedel
     expire = datetime.now(timezone.utc) + expire_delta
     encode = {"sub": username, "id": id, "role": role, "exp": expire}
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        id: int = payload.get("id")
+        role: str = payload.get("role")
+
+        if username is None or id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials."
+            )
+
+        return {"username": username, "id": id, "role": role}
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials."
+        )
