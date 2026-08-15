@@ -35,7 +35,7 @@ async def get_user(db: db_dependency, user: user_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
-    user_model = db.query(Users).filter(Users.id == user.id).first()
+    user_model = db.query(Users).filter(Users.id == user.get("id")).first()
 
     if user_model is None:
         raise HTTPException(status_code=404, detail="User not found")
