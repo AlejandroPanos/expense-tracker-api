@@ -20,4 +20,17 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 Base.metadata.create_all(bind=engine)
 
+
+def overrige_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+def override_get_current_user():
+    return {"username": "alextest", "id": 1, "role": "admin"}
+
+
 client = TestClient(app)
