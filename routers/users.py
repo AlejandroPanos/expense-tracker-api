@@ -50,7 +50,7 @@ async def get_user(db: db_dependency, user: user_dependency):
     return user_model
 
 
-@router.post("/update_password", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update_password", status_code=status.HTTP_204_NO_CONTENT)
 async def update_user_password(
     db: db_dependency, user: user_dependency, password_request: PasswordUpdateRequest
 ):
@@ -79,7 +79,7 @@ async def update_user_password(
     db.commit()
 
 
-@router.post("/phone_number", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/phone_number", status_code=status.HTTP_204_NO_CONTENT)
 async def update_phone_number(
     db: db_dependency, user: user_dependency, phone_request: PhoneUpdateRequest
 ):
