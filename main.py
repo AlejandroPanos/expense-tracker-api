@@ -1,8 +1,11 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI
+from database import engine
+import models
+from routers import auth, users
 
 app = FastAPI()
 
+models.Base.metadata.create_all(bind=engine)
 
-@app.get("/", status_code=status.HTTP_200_OK)
-async def get_home():
-    return {"message": "Retrieved correctly"}
+app.include_router(auth.router)
+app.include_router(users.router)
