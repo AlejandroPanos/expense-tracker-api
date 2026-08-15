@@ -47,7 +47,7 @@ async def get_user(db: db_dependency, user: user_dependency):
     if user_model.id != user.get("id"):
         raise HTTPException(status_code=401, detail="User not authorised")
 
-    return user
+    return user_model
 
 
 @router.post("/update_password", status_code=status.HTTP_204_NO_CONTENT)
