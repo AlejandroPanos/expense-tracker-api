@@ -73,7 +73,7 @@ async def update_user_password(
     if bcrypt_context.verify(password_request.new_password, user_model.hashed_password):
         raise HTTPException(status_code=401, detail="New password must be different")
 
-    user_model.hashed_password = password_request.new_password
+    user_model.hashed_password = bcrypt_context.hash(password_request.new_password)
 
     db.add(user_model)
     db.commit()
