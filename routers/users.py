@@ -18,6 +18,10 @@ class PasswordUpdateRequest(BaseModel):
     new_password: str = Field(min_length=6)
 
 
+class PhoneUpdateRequest(BaseModel):
+    phone: str = Field(pattern=r"^\+?[1-9]\d{7,14}$")
+
+
 def get_db():
     db = SessionLocal()
     try:
@@ -70,6 +74,27 @@ async def update_user_password(
         raise HTTPException(status_code=401, detail="New password must be different")
 
     user_model.hashed_password = password_request.new_password
+
+    db.add(user_model)
+    db.commit()
+
+
+@router.post("/phone_number", status_code=status.HTTP_204_NO_CONTENT)
+async def update_phone_number(
+    db: db_dependency, user: user_dependency, phone_request: PhoneUpdateRequest
+):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    user_model = db.query(Users).filter(Users.id == user.get("id")).first()
+
+    if user_model is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user_model.id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    user_model.phone_number = phone_request.phone
 
     db.add(user_model)
     db.commit()
