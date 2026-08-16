@@ -4,7 +4,8 @@ from database import Base
 from dotenv import load_dotenv
 import os
 from fastapi.testclient import TestClient
-from sqlalchemy import StaticPool, create_engine, text
+from sqlalchemy import create_engine, text
+from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker
 from models import Users
 from routers.auth import bcrypt_context
@@ -24,7 +25,7 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 Base.metadata.create_all(bind=engine)
 
 
-def overrige_get_db():
+def override_get_db():
     db = TestingSessionLocal()
     try:
         yield db
