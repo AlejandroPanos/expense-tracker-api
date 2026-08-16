@@ -34,7 +34,7 @@ class Category(Base):
     name = Column(String, nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    owner = relationship("User", back_populates="categories")
+    owner = relationship("Users", back_populates="categories")
     expenses = relationship("Expense", back_populates="category")
     budgets = relationship("Budget", back_populates="category")
 
@@ -49,7 +49,7 @@ class Expense(Base):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
 
-    owner = relationship("User", back_populates="expenses")
+    owner = relationship("Users", back_populates="expenses")
     category = relationship("Category", back_populates="expenses")
 
 
@@ -61,5 +61,5 @@ class Budget(Base):
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
     monthly_limit = Column(Float, nullable=False)
 
-    owner = relationship("User", back_populates="budgets")
+    owner = relationship("Users", back_populates="budgets")
     category = relationship("Category", back_populates="budgets")
