@@ -16,3 +16,12 @@ def test_return_user(test_user):
     assert response.json()["last_name"] == "panos"
     assert response.json()["role"] == "admin"
     assert response.json()["phone_number"] == "+34600600600"
+
+
+def test_update_password(test_user):
+    response = client.put(
+        "/users/update_password",
+        json={"current_password": "123456", "new_password": "alextest12"},
+    )
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
