@@ -25,3 +25,8 @@ def test_update_password(test_user):
     )
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_update_phone(test_user):
+    response = client.put("/users/phone_number", json={"phone": "+34606606606"})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
