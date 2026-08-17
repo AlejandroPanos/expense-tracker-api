@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker
-from models import Users
+from models import Users, Category
 from routers.auth import bcrypt_context
 
 load_dotenv()
@@ -60,4 +60,19 @@ def test_user():
     yield user
     with engine.connect() as connection:
         connection.execute(text("DELETE from users;"))
+        connection.commit()
+
+
+@pytest.fixture
+def test_category(test_user):
+    category = Category(name="food", owner_id=test_user.id)
+
+    db = TestingSessionLocal()
+    db.add(category)
+    db.commit()
+    db.refresh(category)
+
+    yield category
+    with engine.connect() as connection:
+        connection.execute(text("DELETE from categories"))
         connection.commit()
