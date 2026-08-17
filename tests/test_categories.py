@@ -12,3 +12,4 @@ def test_return_categories(test_category):
     response = client.get("/categories/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()[0]["name"] == "food"
+    assert response.json()[0]["owner_id"] == test_category.owner_id
