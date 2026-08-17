@@ -26,3 +26,10 @@ def test_create_category_duplicate(test_category):
     response = client.post("/categories/", json={"name": "food"})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()["detail"] == "Category already exists"
+
+
+def test_get_category(test_category):
+    response = client.get("/categories/1")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["name"] == "food"
+    assert response.json()["owner_id"] == test_category.owner_id
