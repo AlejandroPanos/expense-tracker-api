@@ -43,3 +43,13 @@ def test_update_category(test_category):
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["name"] == "groceries"
     assert response.json()["id"] == test_category.id
+
+
+def test_delete_category(test_category):
+    response = client.delete(f"/categories/{test_category.id}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["message"] == "Category deleted successfully"
+
+    db = TestingSessionLocal()
+    deleted = db.query(Category).filter(Category.id == test_category.id).first()
+    assert deleted is None
