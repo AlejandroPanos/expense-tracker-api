@@ -29,7 +29,7 @@ def test_create_category_duplicate(test_category):
 
 
 def test_get_category(test_category):
-    response = client.get("/categories/1")
+    response = client.get(f"/categories/{test_category.id}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["name"] == "food"
     assert response.json()["owner_id"] == test_category.owner_id
