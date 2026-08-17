@@ -68,3 +68,21 @@ async def create_category(
     db.refresh(category)
 
     return category
+
+
+@router.get("/{category_id}", status_code=status.HTTP_200_OK)
+async def get_category_by_id(
+    db: db_dependency, user: user_dependency, category_id: int
+):
+    if user is None or Category.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    category_model = db.query(Category).filter(Category.id == category_id).first()
+
+    if category_model is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    if category_model.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    return category_model
