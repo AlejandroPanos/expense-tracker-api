@@ -13,3 +13,10 @@ def test_return_categories(test_category):
     assert response.status_code == status.HTTP_200_OK
     assert response.json()[0]["name"] == "food"
     assert response.json()[0]["owner_id"] == test_category.owner_id
+
+
+def test_create_category():
+    response = client.post("/categories/", json={"name": "food"})
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["name"] == "food"
+    assert response.json()["owner_id"] == 1
