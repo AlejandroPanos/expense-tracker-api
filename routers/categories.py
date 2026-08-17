@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from starlette import status
 from database import SessionLocal
-from models import Category, Users
+from models import Category, Expense, Budget
 from .auth import get_current_user
 
 # Router
@@ -117,3 +117,36 @@ async def update_category(
     db.refresh(category_model)
 
     return category_model
+
+
+@router.delete("/{category_id}", status_code=status.HTTP_200_OK)
+async def delete_category(db: db_dependency, user: user_dependency, category_id: int):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    category_model = db.query(Category).filter(Category.id == category_id).first()
+
+    if category_model is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    if category_model.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    expense_count = db.query(Expense).filter(Expense.category_id == category_id).count()
+    budget_count = db.query(Budget).filter(Budget.category_id == category_id).count()
+
+    if expense_count > 0 or budget_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Cannot delete category: {expense_count} expense(s) and "
+                f"{budget_count} budget(s) are still linked to it. "
+                "Delete or reassign them first."
+            ),
+        )
+
+    db.query(Category).filter(Category.id == category_id).delete()
+
+    db.commit()
+
+    return {"message": "Category deleted successfully"}
