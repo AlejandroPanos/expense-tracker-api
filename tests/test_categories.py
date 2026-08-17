@@ -33,3 +33,13 @@ def test_get_category(test_category):
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["name"] == "food"
     assert response.json()["owner_id"] == test_category.owner_id
+
+
+def test_update_category(test_category):
+    response = client.put(
+        f"/categories/{test_category.id}",
+        json={"new_name": "groceries"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["name"] == "groceries"
+    assert response.json()["id"] == test_category.id
