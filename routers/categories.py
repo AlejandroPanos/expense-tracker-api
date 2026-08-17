@@ -1,7 +1,7 @@
 # Imports
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from starlette import status
 from database import SessionLocal
@@ -28,6 +28,10 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 # Request classes
 class NewCategoryRequest(BaseModel):
     name: str
+
+
+class UpdateCategoryRequest(BaseModel):
+    new_name: str = Field(min_length=1, max_length=20)
 
 
 # Endpoints
@@ -74,7 +78,7 @@ async def create_category(
 async def get_category_by_id(
     db: db_dependency, user: user_dependency, category_id: int
 ):
-    if user is None or Category.owner_id != user.get("id"):
+    if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
     category_model = db.query(Category).filter(Category.id == category_id).first()
@@ -84,5 +88,32 @@ async def get_category_by_id(
 
     if category_model.owner_id != user.get("id"):
         raise HTTPException(status_code=401, detail="User not authorised")
+
+    return category_model
+
+
+@router.put("/{category_id}", status_code=status.HTTP_200_OK)
+async def update_category(
+    db: db_dependency,
+    user: user_dependency,
+    category_request: UpdateCategoryRequest,
+    category_id: int,
+):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    category_model = db.query(Category).filter(Category.id == category_id).first()
+
+    if category_model is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    if category_model.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    category_model.name = category_request.new_name
+
+    db.add(category_model)
+    db.commit()
+    db.refresh(category_model)
 
     return category_model
