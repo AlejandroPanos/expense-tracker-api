@@ -1,5 +1,5 @@
 # Imports
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
@@ -77,3 +77,34 @@ async def create_expense(
     db.refresh(expense)
 
     return expense
+
+
+@router.get("/", status_code=status.HTTP_200_OK)
+async def get_all_expenses(
+    db: db_dependency,
+    user: user_dependency,
+    category_id: Optional[int] = None,
+    start_date: Optional[date_type] = None,
+    end_date: Optional[date_type] = None,
+    min_amount: Optional[float] = None,
+    max_amount: Optional[float] = None,
+    skip: int = 0,
+    limit: int = 100,
+):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    query = db.query(Expense).filter(Expense.owner_id == user.get("id"))
+
+    if category_id is not None:
+        query = query.filter(Expense.category_id == category_id)
+    if start_date is not None:
+        query = query.filter(Expense.date >= start_date)
+    if end_date is not None:
+        query = query.filter(Expense.date <= end_date)
+    if min_amount is not None:
+        query = query.filter(Expense.amount >= min_amount)
+    if max_amount is not None:
+        query = query.filter(Expense.amount <= max_amount)
+
+    return query.offset(skip).limit(limit).all()
