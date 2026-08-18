@@ -177,3 +177,23 @@ async def update_expense_by_id(
     db.refresh(expense)
 
     return expense
+
+
+@router.delete("/{expense_id}", status_code=status.HTTP_200_OK)
+async def delete_expense(db: db_dependency, user: user_dependency, expense_id: str):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    expense_model = db.query(Expense).filter(Expense.id == expense_id).first()
+
+    if expense_model is None:
+        raise HTTPException(status_code=404, detail="Expense not found")
+
+    if expense_model.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    db.query(Expense).filter(Expense.id == expense_id).delete()
+
+    db.commit()
+
+    return {"message": "Expense deleted successfully"}
