@@ -41,6 +41,20 @@ class CreateExpenseRequest(BaseModel):
         return value
 
 
+class UpdateExpenseRequest(BaseModel):
+    amount: float = Field(gt=0)
+    description: str = Field(max_length=150)
+    date: date_type
+    category_id: int
+
+    @field_validator("date")
+    @classmethod
+    def date_not_in_future(cls, value):
+        if value > date_type.today():
+            raise ValueError("Expense cannot be in the future.")
+        return value
+
+
 # Endpoints
 @router.post("/", status_code=status.HTTP_200_OK)
 async def create_expense(
@@ -119,5 +133,47 @@ async def get_expense_by_id(db: db_dependency, user: user_dependency, expense_id
 
     if expense is None:
         raise HTTPException(status_code=404, detail="Expense not found")
+
+    return expense
+
+
+@router.put("/{expense_id}", status_code=status.HTTP_200_OK)
+async def update_expense_by_id(
+    db: db_dependency,
+    user: user_dependency,
+    expense_id: int,
+    update_request: UpdateExpenseRequest,
+):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    expense = db.query(Expense).filter(Expense.id == expense_id).first()
+
+    if expense is None:
+        raise HTTPException(status_code=404, detail="Expense not found")
+
+    category = (
+        db.query(Category)
+        .filter(
+            Category.id == update_request.category_id,
+            Category.owner_id == user.get("id"),
+        )
+        .first()
+    )
+
+    if category is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Category not found or does not belong to user",
+        )
+
+    expense.amount = update_request.amount
+    expense.description = update_request.description
+    expense.date = update_request.date
+    expense.category_id = update_request.category_id
+
+    db.add(expense)
+    db.commit()
+    db.refresh(expense)
 
     return expense
