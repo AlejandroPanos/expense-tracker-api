@@ -115,7 +115,7 @@ async def get_expense_by_id(db: db_dependency, user: user_dependency, expense_id
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
-    expense = db.query(Expense).filter(Expense.owner_id == user.get("id")).first()
+    expense = db.query(Expense).filter(Expense.id == expense_id).first()
 
     if expense is None:
         raise HTTPException(status_code=404, detail="Expense not found")
