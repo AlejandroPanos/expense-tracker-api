@@ -57,7 +57,7 @@ class UpdateExpenseRequest(BaseModel):
 
 
 # Endpoints
-@router.post("/", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_expense(
     db: db_dependency, user: user_dependency, expense_request: CreateExpenseRequest
 ):
