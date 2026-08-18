@@ -154,6 +154,9 @@ async def get_expense_by_id(db: db_dependency, user: user_dependency, expense_id
     if expense is None:
         raise HTTPException(status_code=404, detail="Expense not found")
 
+    if expense.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
     return expense
 
 
@@ -171,6 +174,9 @@ async def update_expense_by_id(
 
     if expense is None:
         raise HTTPException(status_code=404, detail="Expense not found")
+
+    if expense.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
 
     category = (
         db.query(Category)
@@ -200,16 +206,16 @@ async def update_expense_by_id(
 
 
 @router.delete("/{expense_id}", status_code=status.HTTP_200_OK)
-async def delete_expense(db: db_dependency, user: user_dependency, expense_id: str):
+async def delete_expense(db: db_dependency, user: user_dependency, expense_id: int):
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
-    expense_model = db.query(Expense).filter(Expense.id == expense_id).first()
+    expense = db.query(Expense).filter(Expense.id == expense_id).first()
 
-    if expense_model is None:
+    if expense is None:
         raise HTTPException(status_code=404, detail="Expense not found")
 
-    if expense_model.owner_id != user.get("id"):
+    if expense.owner_id != user.get("id"):
         raise HTTPException(status_code=401, detail="User not authorised")
 
     db.query(Expense).filter(Expense.id == expense_id).delete()
