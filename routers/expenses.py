@@ -125,6 +125,25 @@ async def get_all_expenses(
     return query.offset(skip).limit(limit).all()
 
 
+@router.get("/summary", status_code=status.HTTP_200_OK)
+async def get_expenses_by_category(db: db_dependency, user: user_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    results = (
+        db.query(
+            Category.name,
+            func.sum(Expense.amount).label("total_spent"),
+        )
+        .join(Category, Expense.category_id == Category.id)
+        .filter(Expense.owner_id == user.get("id"))
+        .group_by(Category.name)
+        .all()
+    )
+
+    return [{"category": name, "total_spent": total} for name, total in results]
+
+
 @router.get("/{expense_id}", status_code=status.HTTP_200_OK)
 async def get_expense_by_id(db: db_dependency, user: user_dependency, expense_id: int):
     if user is None:
@@ -198,22 +217,3 @@ async def delete_expense(db: db_dependency, user: user_dependency, expense_id: s
     db.commit()
 
     return {"message": "Expense deleted successfully"}
-
-
-@router.get("/summary", status_code=status.HTTP_200_OK)
-async def get_expenses_by_category(db: db_dependency, user: user_dependency):
-    if user is None:
-        raise HTTPException(status_code=401, detail="User not authorised")
-
-    results = (
-        db.query(
-            Category.name,
-            func.sum(Expense.amount).label("total_spent"),
-        )
-        .join(Category, Expense.category_id == Category.id)
-        .filter(Expense.owner_id == user.get("id"))
-        .group_by(Category.name)
-        .all()
-    )
-
-    return [{"category": name, "total_spent": total} for name, total in results]
