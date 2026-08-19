@@ -113,3 +113,23 @@ async def update_budget(
     db.refresh(budget)
 
     return budget
+
+
+@router.delete("/{budget_id}", status_code=status.HTTP_200_OK)
+async def delete_budget(db: db_dependency, user: user_dependency, budget_id: int):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    budget = db.query(Budget).filter(Budget.id == budget_id)
+
+    if budget is None:
+        raise HTTPException(status_code=404, detail="Budget not found")
+
+    if budget.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    db.query(Budget).filter(Budget.id == budget_id).delete()
+
+    db.commit()
+
+    return {"message": "Budget deleted correctly"}
