@@ -5,10 +5,10 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from starlette import status
 from database import SessionLocal
-from models import Budget, Category
+from models import Budget, Category, Expense
 from routers.auth import get_current_user
-from pydantic import BaseModel, Field, field_validator
-from datetime import date as date_type
+from pydantic import BaseModel, Field
+from datetime import date
 
 # Router
 router = APIRouter(prefix="/budgets", tags=["budgets"])
@@ -133,3 +133,58 @@ async def delete_budget(db: db_dependency, user: user_dependency, budget_id: int
     db.commit()
 
     return {"message": "Budget deleted correctly"}
+
+
+@router.get("/{category_id}/status", status_code=status.HTTP_200_OK)
+async def get_budget_status_by_category(
+    db: db_dependency, user: user_dependency, category_id: int
+):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    category = (
+        db.query(Category)
+        .filter(
+            Category.id == category_id,
+            Category.owner_id == user.get("id"),
+        )
+        .first()
+    )
+
+    if category is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    budget = (
+        db.query(Budget)
+        .filter(
+            Budget.category_id == category_id,
+            Budget.owner_id == user.get("id"),
+        )
+        .first()
+    )
+
+    if budget is None:
+        raise HTTPException(status_code=404, detail="No budget set for this category")
+
+    today = date.today()
+    start_of_month = today.replace(day=1)
+
+    spent_result = (
+        db.query(func.sum(Expense.amount))
+        .filter(
+            Expense.category_id == category_id,
+            Expense.owner_id == user.get("id"),
+            Expense.date >= start_of_month,
+            Expense.date <= today,
+        )
+        .scalar()
+    )
+
+    total_spent = spent_result if spent_result is not None else 0.0
+
+    return {
+        "category": category.name,
+        "monthly_limit": budget.monthly_limit,
+        "spent": total_spent,
+        "remaining": budget.monthly_limit - total_spent,
+    }
