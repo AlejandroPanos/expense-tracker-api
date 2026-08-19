@@ -94,3 +94,39 @@ def test_get_expenses_pagination(test_user, test_category):
     response = client.get("/expenses/", params={"skip": 2, "limit": 2})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
+
+
+def test_get_all_expenses_only_returns_own_expenses(test_user, test_category):
+    other_user = Users(
+        email="other@gmail.com",
+        username="other",
+        first_name="Other",
+        last_name="User",
+        hashed_password=bcrypt_context.hash("password123"),
+        role="user",
+        is_active=True,
+        phone_number="+34600600601",
+    )
+    db = TestingSessionLocal()
+    db.add(other_user)
+    db.commit()
+    db.refresh(other_user)
+
+    other_category = Category(name="other food", owner_id=other_user.id)
+    db.add(other_category)
+    db.commit()
+    db.refresh(other_category)
+
+    other_expense = Expense(
+        amount=999,
+        description="Not yours",
+        date=date.today(),
+        owner_id=other_user.id,
+        category_id=other_category.id,
+    )
+    db.add(other_expense)
+    db.commit()
+
+    response = client.get("/expenses/")
+    assert response.status_code == status.HTTP_200_OK
+    assert all(e["owner_id"] != other_user.id for e in response.json())
