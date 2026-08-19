@@ -70,3 +70,27 @@ def test_get_expenses_filtered_by_date_excludes_out_of_range(test_expense):
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
+
+
+def test_get_expenses_pagination(test_user, test_category):
+    db = TestingSessionLocal()
+
+    for i in range(3):
+        db.add(
+            Expense(
+                amount=100 + i,
+                description=f"Expense {i}",
+                date=date.today(),
+                owner_id=test_user.id,
+                category_id=test_category.id,
+            )
+        )
+    db.commit()
+
+    response = client.get("/expenses/", params={"limit": 2})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 2
+
+    response = client.get("/expenses/", params={"skip": 2, "limit": 2})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 1
