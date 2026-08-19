@@ -75,7 +75,7 @@ async def create_budget(
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_budget_list(
-    db: db_dependency, user: user_dependency, skip: int = 0, limit: int = 0
+    db: db_dependency, user: user_dependency, skip: int = 0, limit: int = 100
 ):
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
@@ -120,7 +120,7 @@ async def delete_budget(db: db_dependency, user: user_dependency, budget_id: int
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
-    budget = db.query(Budget).filter(Budget.id == budget_id)
+    budget = db.query(Budget).filter(Budget.id == budget_id).first()
 
     if budget is None:
         raise HTTPException(status_code=404, detail="Budget not found")
