@@ -179,7 +179,3 @@ All routes except registration and login require a `Bearer` JWT in the `Authoriz
 - JWTs are short-lived (20 minutes) and signed with `HS256`.
 - Every resource lookup by ID is scoped with an ownership check (`owner_id == current_user.id`) — a valid token alone is not sufficient to access another user's data.
 - Cross-resource references (e.g. attaching an expense to a `category_id`) are validated server-side to confirm the referenced resource actually belongs to the requesting user, preventing IDOR-style access to other users' data.
-
-## License
-
-This project is for educational purposes.
