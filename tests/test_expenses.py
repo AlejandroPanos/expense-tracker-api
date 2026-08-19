@@ -61,3 +61,12 @@ def test_get_expenses_filtered_by_amount_excludes_out_of_range(test_expense):
     response = client.get("/expenses/", params={"min_amount": 1000})
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
+
+
+def test_get_expenses_filtered_by_date_excludes_out_of_range(test_expense):
+    response = client.get(
+        "/expenses/",
+        params={"start_date": "2020-01-01", "end_date": "2020-12-31"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == []
