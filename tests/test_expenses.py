@@ -39,3 +39,9 @@ def test_get_expenses_filtered_by_category(test_expense, test_category):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
     assert response.json()[0]["category_id"] == test_category.id
+
+
+def test_get_expenses_filtered_by_amount_range(test_expense):
+    response = client.get("/expenses/", params={"min_amount": 100, "max_amount": 1000})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 1
