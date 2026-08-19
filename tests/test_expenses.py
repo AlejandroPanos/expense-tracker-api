@@ -45,3 +45,12 @@ def test_get_expenses_filtered_by_amount_range(test_expense):
     response = client.get("/expenses/", params={"min_amount": 100, "max_amount": 1000})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
+
+
+def test_get_expenses_filtered_by_date_range(test_expense):
+    today_str = date.today().isoformat()
+    response = client.get(
+        "/expenses/", params={"start_date": today_str, "end_date": today_str}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 1
