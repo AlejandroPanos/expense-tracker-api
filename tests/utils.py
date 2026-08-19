@@ -98,3 +98,20 @@ def test_expense(test_user, test_category):
     with engine.connect() as connection:
         connection.execute(text("DELETE from expenses"))
         connection.commit()
+
+
+@pytest.fixture
+def test_budget(test_user, test_category):
+    budget = Budget(
+        owner_id=test_user.id, category_id=test_category.id, monthly_limit=1000
+    )
+
+    db = TestingSessionLocal()
+    db.add(budget)
+    db.commit()
+    db.refresh(budget)
+
+    yield budget
+    with engine.connect() as connection:
+        connection.execute(text("DELETE from budgets"))
+        connection.commit()
