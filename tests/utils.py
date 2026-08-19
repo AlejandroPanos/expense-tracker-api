@@ -115,3 +115,14 @@ def test_budget(test_user, test_category):
     with engine.connect() as connection:
         connection.execute(text("DELETE from budgets"))
         connection.commit()
+
+
+@pytest.fixture(autouse=True)
+def cleanup():
+    yield
+    with engine.connect() as connection:
+        connection.execute(text("DELETE from expenses"))
+        connection.execute(text("DELETE from budgets"))
+        connection.execute(text("DELETE from categories"))
+        connection.execute(text("DELETE from users"))
+        connection.commit()
