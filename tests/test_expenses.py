@@ -26,3 +26,9 @@ def test_create_expense(test_expense, test_category):
     assert response.json()["description"] == "An average description"
     assert response.json()["date"] == today_str
     assert response.json()["category_id"] == test_category.id
+
+
+def test_get_all_expenses(test_expense):
+    response = client.get("/expenses/")
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 1
