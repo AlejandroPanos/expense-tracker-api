@@ -54,3 +54,10 @@ def test_get_expenses_filtered_by_date_range(test_expense):
     )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
+
+
+def test_get_expenses_filtered_by_amount_excludes_out_of_range(test_expense):
+    # test_expense has amount=500 — filtering for min_amount=1000 should exclude it
+    response = client.get("/expenses/", params={"min_amount": 1000})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == []
