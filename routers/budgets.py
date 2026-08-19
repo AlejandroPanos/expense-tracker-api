@@ -34,7 +34,6 @@ class CreateBudgetRequest(BaseModel):
 
 
 class UpdateBudgetRequest(BaseModel):
-    category_id: int
     monthly_limit: float = Field(gt=0)
 
 
@@ -107,22 +106,6 @@ async def update_budget(
     if budget.owner_id != user.get("id"):
         raise HTTPException(status_code=401, detail="User not authorised")
 
-    category = (
-        db.query(Category)
-        .filter(
-            Category.id == update_request.category_id,
-            Category.owner_id == user.get("id"),
-        )
-        .first()
-    )
-
-    if category is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Category not found or does not belong to user",
-        )
-
-    budget.category_id = update_request.category_id
     budget.monthly_limit = update_request.monthly_limit
 
     db.add(budget)
