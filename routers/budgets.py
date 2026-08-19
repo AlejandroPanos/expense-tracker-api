@@ -33,6 +33,11 @@ class CreateBudgetRequest(BaseModel):
     monthly_limit: float = Field(gt=0)
 
 
+class UpdateBudgetRequest(BaseModel):
+    category_id: int
+    monthly_limit: float = Field(gt=0)
+
+
 # Endpoints
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_budget(
@@ -82,3 +87,46 @@ async def get_budget_list(
         raise HTTPException(status_code=404, detail="Budgets not found for user")
 
     return budget_list.offset(skip).limit(limit).all()
+
+
+@router.put("/{budget_id}", status_code=status.HTTP_200_OK)
+async def update_budget(
+    db: db_dependency,
+    user: user_dependency,
+    budget_id: int,
+    update_request: UpdateBudgetRequest,
+):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    budget = db.query(Budget).filter(Budget.id == budget_id).first()
+
+    if budget is None:
+        raise HTTPException(status_code=404, detail="Budget not found")
+
+    if budget.owner_id != user.get("id"):
+        raise HTTPException(status_code=401, detail="User not authorised")
+
+    category = (
+        db.query(Category)
+        .filter(
+            Category.id == update_request.category_id,
+            Category.owner_id == user.get("id"),
+        )
+        .first()
+    )
+
+    if category is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Category not found or does not belong to user",
+        )
+
+    budget.category_id = update_request.category_id
+    budget.monthly_limit = update_request.monthly_limit
+
+    db.add(budget)
+    db.commit()
+    db.refresh(budget)
+
+    return budget
