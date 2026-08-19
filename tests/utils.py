@@ -7,8 +7,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker
-from models import Users, Category
+from models import Users, Category, Expense, Budget
 from routers.auth import bcrypt_context
+from datetime import date
 
 load_dotenv()
 
@@ -75,4 +76,25 @@ def test_category(test_user):
     yield category
     with engine.connect() as connection:
         connection.execute(text("DELETE from categories"))
+        connection.commit()
+
+
+@pytest.fixture
+def test_expense(test_user, test_category):
+    expense = Expense(
+        amount=500,
+        description="A test expense",
+        date=date.today(),
+        owner_id=test_user.id,
+        category_id=test_category.id,
+    )
+
+    db = TestingSessionLocal()
+    db.add(expense)
+    db.commit()
+    db.refresh(expense)
+
+    yield expense
+    with engine.connect() as connection:
+        connection.execute(text("DELETE from expenses"))
         connection.commit()
