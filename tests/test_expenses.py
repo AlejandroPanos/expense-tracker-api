@@ -130,3 +130,121 @@ def test_get_all_expenses_only_returns_own_expenses(test_user, test_category):
     response = client.get("/expenses/")
     assert response.status_code == status.HTTP_200_OK
     assert all(e["owner_id"] != other_user.id for e in response.json())
+
+
+def test_get_expenses_summary(test_expense, test_category):
+    response = client.get("/expenses/summary")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == [
+        {"category": test_category.name, "total_spent": test_expense.amount}
+    ]
+
+
+def test_get_expense_by_id(test_expense):
+    response = client.get(f"/expenses/{test_expense.id}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["id"] == test_expense.id
+    assert response.json()["amount"] == test_expense.amount
+    assert response.json()["description"] == test_expense.description
+
+
+def test_get_expense_by_id_not_found():
+    response = client.get("/expenses/999")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json()["detail"] == "Expense not found"
+
+
+def test_get_expense_by_id_not_owner(test_expense):
+    other_user = Users(
+        email="other@gmail.com",
+        username="other",
+        first_name="Other",
+        last_name="User",
+        hashed_password=bcrypt_context.hash("password123"),
+        role="user",
+        is_active=True,
+        phone_number="+34600600601",
+    )
+    db = TestingSessionLocal()
+    db.add(other_user)
+    db.commit()
+    db.refresh(other_user)
+
+    other_category = Category(name="other food", owner_id=other_user.id)
+    db.add(other_category)
+    db.commit()
+    db.refresh(other_category)
+
+    other_expense = Expense(
+        amount=250,
+        description="Not yours",
+        date=date.today(),
+        owner_id=other_user.id,
+        category_id=other_category.id,
+    )
+    db.add(other_expense)
+    db.commit()
+    db.refresh(other_expense)
+
+    response = client.get(f"/expenses/{other_expense.id}")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_update_expense_by_id(test_expense, test_category):
+    new_date = date.today().isoformat()
+    response = client.put(
+        f"/expenses/{test_expense.id}",
+        json={
+            "amount": 750,
+            "description": "Updated description",
+            "date": new_date,
+            "category_id": test_category.id,
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["amount"] == 750
+    assert response.json()["description"] == "Updated description"
+
+
+def test_update_expense_by_id_not_found(test_category):
+    response = client.put(
+        "/expenses/999",
+        json={
+            "amount": 750,
+            "description": "Updated description",
+            "date": date.today().isoformat(),
+            "category_id": test_category.id,
+        },
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json()["detail"] == "Expense not found"
+
+
+def test_update_expense_by_id_invalid_category(test_expense):
+    response = client.put(
+        f"/expenses/{test_expense.id}",
+        json={
+            "amount": 750,
+            "description": "Updated description",
+            "date": date.today().isoformat(),
+            "category_id": 999,
+        },
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json()["detail"] == "Category not found or does not belong to user"
+
+
+def test_delete_expense(test_expense):
+    response = client.delete(f"/expenses/{test_expense.id}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["message"] == "Expense deleted successfully"
+
+    db = TestingSessionLocal()
+    deleted = db.query(Expense).filter(Expense.id == test_expense.id).first()
+    assert deleted is None
+
+
+def test_delete_expense_not_found():
+    response = client.delete("/expenses/999")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json()["detail"] == "Expense not found"
