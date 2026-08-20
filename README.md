@@ -1,6 +1,6 @@
 # Expense Tracker API
 
-A RESTful backend for tracking personal expenses, built with **FastAPI** and **SQLAlchemy**. Users can register, authenticate via JWT, organize spending into categories, log expenses, and set monthly budgets per category with real-time spend/remaining calculations.
+A RESTful backend for tracking personal expenses, built with **FastAPI**, **SQLAlchemy** and **bcrypt**. Users can register, authenticate via JWT, organize spending into categories, log expenses, and set monthly budgets per category with real-time spend/remaining calculations.
 
 This project was built as a practical exercise in designing a multi-table relational API with proper ownership-based authorization — every resource is scoped to the authenticated user, and cross-resource references (e.g. an expense's category) are validated server-side rather than trusted from client input.
 
