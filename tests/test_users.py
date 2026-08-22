@@ -3,6 +3,8 @@ from .utils import *
 from models import Users
 from fastapi import status
 
+# Swap out the real DB session and real JWT-auth for the test ones during tests,
+# so requests never touch the production database.
 app.dependency_overrides[get_db] = override_get_db
 app.dependency_overrides[get_current_user] = override_get_current_user
 
