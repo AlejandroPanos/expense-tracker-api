@@ -10,6 +10,16 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 
 
 def test_return_user(test_user):
+    """
+    Verify GET /users/ returns the authenticated user's full profile.
+
+    Args:
+        test_user: Fixture that inserts a real Users row before the test runs.
+
+    Asserts:
+        - Response status is 200 OK.
+        - Every profile field in the response matches the data test_user created.
+    """
     response = client.get("/users/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["email"] == "alex@gmail.com"
