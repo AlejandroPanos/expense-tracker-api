@@ -58,6 +58,16 @@ def test_update_password(test_user):
 
 
 def test_update_phone(test_user):
+    """
+    Verify PUT /users/phone_number correctly updates the user's phone number.
+
+    Args:
+        test_user: Fixture that inserts a real Users row before the test runs.
+
+    Asserts:
+        - Response status is 204 No Content.
+        - The phone_number column is updated in the database after the request.
+    """
     response = client.put("/users/phone_number", json={"phone": "+34606606606"})
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
