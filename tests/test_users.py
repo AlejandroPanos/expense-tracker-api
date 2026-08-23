@@ -31,6 +31,18 @@ def test_return_user(test_user):
 
 
 def test_update_password(test_user):
+    """
+    Verify PUT /users/update_password correctly updates and hashes a new password.
+
+    Args:
+        test_user: Fixture that inserts a real Users row, hashed with
+            password "123456", before the test runs.
+
+    Asserts:
+        - Response status is 204 No Content.
+        - The new password verifies against the stored hash after the request.
+        - The old password no longer verifies against the stored hash.
+    """
     response = client.put(
         "/users/update_password",
         json={"current_password": "123456", "new_password": "alextest12"},
