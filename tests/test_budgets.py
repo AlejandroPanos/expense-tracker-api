@@ -65,6 +65,16 @@ def test_get_budget_list(test_budget):
 
 
 def test_update_budget(test_budget):
+    """
+    Verify PUT /budgets/{budget_id} updates an existing budget's monthly limit.
+
+    Args:
+        test_budget: Fixture that inserts a real Budget row before the test runs.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The returned monthly_limit reflects the new value.
+    """
     response = client.put(
         f"/budgets/{test_budget.id}",
         json={"monthly_limit": 750},
