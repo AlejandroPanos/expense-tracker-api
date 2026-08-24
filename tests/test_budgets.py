@@ -47,6 +47,17 @@ def test_create_budget_invalid_category():
 
 
 def test_get_budget_list(test_budget):
+    """
+    Verify GET /budgets/ returns the current user's budgets.
+
+    Args:
+        test_budget: Fixture that inserts a real Budget row (and its
+            dependent user/category) before the test runs.
+
+    Asserts:
+        - Response status is 200 OK.
+        - Exactly one budget is returned, matching test_budget's id.
+    """
     response = client.get("/budgets/")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
