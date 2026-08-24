@@ -30,6 +30,14 @@ def test_create_budget(test_category):
 
 
 def test_create_budget_invalid_category():
+    """
+    Verify POST /budgets/ rejects a category_id that doesn't exist or
+    doesn't belong to the current user.
+
+    Asserts:
+        - Response status is 404 Not Found.
+        - The error detail explains the category is missing or not owned.
+    """
     response = client.post(
         "/budgets/",
         json={"category_id": 999, "monthly_limit": 500},
