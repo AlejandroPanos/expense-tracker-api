@@ -9,6 +9,17 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 
 
 def test_create_budget(test_category):
+    """
+    Verify POST /budgets/ creates a budget for a category the user owns.
+
+    Args:
+        test_category: Fixture that inserts a real Category row, owned by
+            the test user, before the test runs.
+
+    Asserts:
+        - Response status is 201 Created.
+        - The returned budget has the correct monthly_limit and category_id.
+    """
     response = client.post(
         "/budgets/",
         json={"category_id": test_category.id, "monthly_limit": 500},
