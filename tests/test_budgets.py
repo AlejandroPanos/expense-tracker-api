@@ -84,6 +84,14 @@ def test_update_budget(test_budget):
 
 
 def test_update_budget_not_found():
+    """
+    Verify PUT /budgets/{budget_id} returns 404 for a budget ID that
+    doesn't exist.
+
+    Asserts:
+        - Response status is 404 Not Found.
+        - The error detail confirms the budget was not found.
+    """
     response = client.put(
         "/budgets/999",
         json={"monthly_limit": 750},
