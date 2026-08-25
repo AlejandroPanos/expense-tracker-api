@@ -162,6 +162,17 @@ def test_get_budget_status_by_category(test_expense, test_budget, test_category)
 
 
 def test_get_budget_status_no_budget_set(test_category):
+    """
+    Verify GET /budgets/{category_id}/status returns 404 when the category
+    has no budget configured.
+
+    Args:
+        test_category: Fixture that inserts a Category with no associated Budget.
+
+    Asserts:
+        - Response status is 404 Not Found.
+        - The error detail confirms no budget is set for the category.
+    """
     response = client.get(f"/budgets/{test_category.id}/status")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "No budget set for this category"
