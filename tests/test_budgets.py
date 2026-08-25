@@ -121,6 +121,14 @@ def test_delete_budget(test_budget):
 
 
 def test_delete_budget_not_found():
+    """
+    Verify DELETE /budgets/{budget_id} returns 404 for a budget ID that
+    doesn't exist.
+
+    Asserts:
+        - Response status is 404 Not Found.
+        - The error detail confirms the budget was not found.
+    """
     response = client.delete("/budgets/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Budget not found"
