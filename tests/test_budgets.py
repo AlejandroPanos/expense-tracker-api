@@ -179,6 +179,24 @@ def test_get_budget_status_no_budget_set(test_category):
 
 
 def test_get_budget_status_no_expenses(test_budget, test_category):
+    """
+    Verify GET /budgets/{category_id}/status handles a category with a
+    budget but zero expenses this month (SUM() returns NULL, not 0).
+
+    Args:
+        test_budget: Fixture that inserts a Budget tied to test_category.
+        test_category: Fixture that inserts the Category, with no expenses
+            attached.
+
+    Asserts:
+        - Response status is 200 OK.
+        - spent is 0.0 (not None), confirming the NULL-sum edge case is handled.
+        - remaining equals the full monthly_limit, since nothing was spent.
+    """
+    response = client.get(f"/budgets/{test_category.id}/status")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["spent"] == 0.0
+    assert response.json()["remaining"] == test_budget.monthly_limit
     response = client.get(f"/budgets/{test_category.id}/status")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["spent"] == 0.0
