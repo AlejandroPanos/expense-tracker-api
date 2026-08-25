@@ -101,6 +101,16 @@ def test_update_budget_not_found():
 
 
 def test_delete_budget(test_budget):
+    """
+    Verify DELETE /budgets/{budget_id} removes the budget from the database.
+
+    Args:
+        test_budget: Fixture that inserts a real Budget row before the test runs.
+
+    Asserts:
+        - Response status is 200 OK with a success message.
+        - The budget row no longer exists in the database after deletion.
+    """
     response = client.delete(f"/budgets/{test_budget.id}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["message"] == "Budget deleted correctly"
