@@ -135,6 +135,22 @@ def test_delete_budget_not_found():
 
 
 def test_get_budget_status_by_category(test_expense, test_budget, test_category):
+    """
+    Verify GET /budgets/{category_id}/status correctly computes spend and
+    remaining budget when an expense exists for the category this month.
+
+    Args:
+        test_expense: Fixture that inserts an Expense tied to test_category,
+            dated today.
+        test_budget: Fixture that inserts a Budget tied to test_category.
+        test_category: Fixture that inserts the shared Category both
+            test_expense and test_budget reference.
+
+    Asserts:
+        - Response status is 200 OK.
+        - category, monthly_limit, spent, and remaining all match the
+          expected values derived from the fixtures.
+    """
     response = client.get(f"/budgets/{test_category.id}/status")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["category"] == test_category.name
