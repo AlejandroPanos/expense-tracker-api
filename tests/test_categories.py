@@ -44,6 +44,18 @@ def test_create_category():
 
 
 def test_create_category_duplicate(test_category):
+    """
+    Verify POST /categories/ rejects a category name that already exists
+    for the current user.
+
+    Args:
+        test_category: Fixture that inserts a Category named "food" before
+            the test runs, so this test's request collides with it.
+
+    Asserts:
+        - Response status is 400 Bad Request.
+        - The error detail confirms the category already exists.
+    """
     response = client.post("/categories/", json={"name": "food"})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()["detail"] == "Category already exists"
