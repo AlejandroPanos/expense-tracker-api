@@ -9,6 +9,18 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 
 
 def test_return_categories(test_category):
+    """
+    Verify GET /categories/ returns the current user's categories.
+
+    Args:
+        test_category: Fixture that inserts a real Category row ("food"),
+            owned by the test user, before the test runs.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The first (and only) category returned has the expected name
+          and owner_id.
+    """
     response = client.get("/categories/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()[0]["name"] == "food"
