@@ -28,6 +28,15 @@ def test_return_categories(test_category):
 
 
 def test_create_category():
+    """
+    Verify POST /categories/ creates a new category for the current user.
+
+    Asserts:
+        - Response status is 201 Created.
+        - The returned category has the submitted name and the correct
+          owner_id, derived from the authenticated user rather than the
+          request body.
+    """
     response = client.post("/categories/", json={"name": "food"})
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()["name"] == "food"
