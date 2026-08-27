@@ -101,6 +101,18 @@ def test_update_category(test_category):
 
 
 def test_delete_category(test_category):
+    """
+    Verify DELETE /categories/{category_id} removes a category with no
+    expenses or budgets attached to it.
+
+    Args:
+        test_category: Fixture that inserts a real Category row, with
+            nothing else referencing it, before the test runs.
+
+    Asserts:
+        - Response status is 200 OK with a success message.
+        - The category row no longer exists in the database after deletion.
+    """
     response = client.delete(f"/categories/{test_category.id}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["message"] == "Category deleted successfully"
