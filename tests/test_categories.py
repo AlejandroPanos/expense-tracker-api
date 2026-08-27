@@ -80,6 +80,17 @@ def test_get_category(test_category):
 
 
 def test_update_category(test_category):
+    """
+    Verify PUT /categories/{category_id} renames an existing category.
+
+    Args:
+        test_category: Fixture that inserts a real Category row before
+            the test runs.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The returned category reflects the new name, with the same id.
+    """
     response = client.put(
         f"/categories/{test_category.id}",
         json={"new_name": "groceries"},
