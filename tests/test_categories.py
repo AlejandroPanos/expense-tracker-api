@@ -62,6 +62,17 @@ def test_create_category_duplicate(test_category):
 
 
 def test_get_category(test_category):
+    """
+    Verify GET /categories/{category_id} returns a single category by ID.
+
+    Args:
+        test_category: Fixture that inserts a real Category row before
+            the test runs.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The returned category's name and owner_id match test_category.
+    """
     response = client.get(f"/categories/{test_category.id}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["name"] == "food"
