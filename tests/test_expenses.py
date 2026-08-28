@@ -81,6 +81,18 @@ def test_get_expenses_filtered_by_category(test_expense, test_category):
 
 
 def test_get_expenses_filtered_by_amount_range(test_expense):
+    """
+    Verify GET /expenses/?min_amount=...&max_amount=... includes an
+    expense that falls within the given range.
+
+    Args:
+        test_expense: Fixture that inserts an Expense with amount=500,
+            which falls inside the range used here.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The expense is included in the results.
+    """
     response = client.get("/expenses/", params={"min_amount": 100, "max_amount": 1000})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
