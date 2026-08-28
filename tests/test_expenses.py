@@ -61,6 +61,19 @@ def test_get_all_expenses(test_expense):
 
 
 def test_get_expenses_filtered_by_category(test_expense, test_category):
+    """
+    Verify GET /expenses/?category_id=... correctly filters expenses by
+    category.
+
+    Args:
+        test_expense: Fixture that inserts an Expense tied to test_category.
+        test_category: Fixture that inserts the Category being filtered on.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The single matching expense is returned, with the expected
+          category_id.
+    """
     response = client.get("/expenses/", params={"category_id": test_category.id})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
