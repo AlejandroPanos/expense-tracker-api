@@ -10,6 +10,21 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 
 
 def test_create_expense(test_expense, test_category):
+    """
+    Verify POST /expenses/ creates a new expense tied to a category the
+    user owns.
+
+    Args:
+        test_expense: Fixture that inserts a real Expense (unused directly
+            here, but ensures the surrounding user/category setup exists).
+        test_category: Fixture that inserts a real Category, owned by the
+            test user, to attach the new expense to.
+
+    Asserts:
+        - Response status is 201 Created.
+        - The returned expense matches the submitted amount, description,
+          date, and category_id.
+    """
     today_str = date.today().isoformat()
 
     response = client.post(
