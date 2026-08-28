@@ -44,6 +44,17 @@ def test_create_expense(test_expense, test_category):
 
 
 def test_get_all_expenses(test_expense):
+    """
+    Verify GET /expenses/ returns the current user's expenses with no
+    filters applied.
+
+    Args:
+        test_expense: Fixture that inserts a single real Expense row.
+
+    Asserts:
+        - Response status is 200 OK.
+        - Exactly one expense is returned.
+    """
     response = client.get("/expenses/")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
