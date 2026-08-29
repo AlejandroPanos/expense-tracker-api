@@ -99,6 +99,18 @@ def test_get_expenses_filtered_by_amount_range(test_expense):
 
 
 def test_get_expenses_filtered_by_date_range(test_expense):
+    """
+    Verify GET /expenses/?start_date=...&end_date=... includes an expense
+    dated within the given range.
+
+    Args:
+        test_expense: Fixture that inserts an Expense dated today, which
+            falls inside the single-day range used here.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The expense is included in the results.
+    """
     today_str = date.today().isoformat()
     response = client.get(
         "/expenses/", params={"start_date": today_str, "end_date": today_str}
