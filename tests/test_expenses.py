@@ -120,6 +120,19 @@ def test_get_expenses_filtered_by_date_range(test_expense):
 
 
 def test_get_expenses_filtered_by_amount_excludes_out_of_range(test_expense):
+    """
+    Verify GET /expenses/?min_amount=... correctly excludes an expense
+    that falls below the threshold, proving the filter actually filters
+    rather than just not breaking the query.
+
+    Args:
+        test_expense: Fixture that inserts an Expense with amount=500,
+            which is below the min_amount=1000 used here.
+
+    Asserts:
+        - Response status is 200 OK.
+        - No expenses are returned.
+    """
     # test_expense has amount=500 — filtering for min_amount=1000 should exclude it
     response = client.get("/expenses/", params={"min_amount": 1000})
     assert response.status_code == status.HTTP_200_OK
