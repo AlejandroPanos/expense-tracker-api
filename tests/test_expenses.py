@@ -161,6 +161,20 @@ def test_get_expenses_filtered_by_date_excludes_out_of_range(test_expense):
 
 
 def test_get_expenses_pagination(test_user, test_category):
+    """
+    Verify GET /expenses/?skip=...&limit=... correctly paginates results
+    across multiple expenses.
+
+    Args:
+        test_user: Fixture providing the owner for the manually inserted
+            expenses below.
+        test_category: Fixture providing the category for the manually
+            inserted expenses below.
+
+    Asserts:
+        - limit=2 returns exactly 2 of the 3 expenses created.
+        - skip=2, limit=2 returns the remaining 1 expense.
+    """
     db = TestingSessionLocal()
 
     for i in range(3):
