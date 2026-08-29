@@ -140,6 +140,18 @@ def test_get_expenses_filtered_by_amount_excludes_out_of_range(test_expense):
 
 
 def test_get_expenses_filtered_by_date_excludes_out_of_range(test_expense):
+    """
+    Verify GET /expenses/?start_date=...&end_date=... correctly excludes
+    an expense dated outside the given range.
+
+    Args:
+        test_expense: Fixture that inserts an Expense dated today, which
+            falls outside the 2020 date range used here.
+
+    Asserts:
+        - Response status is 200 OK.
+        - No expenses are returned.
+    """
     response = client.get(
         "/expenses/",
         params={"start_date": "2020-01-01", "end_date": "2020-12-31"},
