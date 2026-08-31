@@ -250,6 +250,20 @@ def test_get_all_expenses_only_returns_own_expenses(test_user, test_category):
 
 
 def test_get_expenses_summary(test_expense, test_category):
+    """
+    Verify GET /expenses/summary correctly aggregates total spend grouped
+    by category.
+
+    Args:
+        test_expense: Fixture that inserts an Expense tied to test_category.
+        test_category: Fixture that inserts the Category the expense
+            belongs to.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The response contains exactly one category entry, with
+          total_spent equal to the single expense's amount.
+    """
     response = client.get("/expenses/summary")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
