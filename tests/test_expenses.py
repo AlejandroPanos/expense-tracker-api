@@ -199,6 +199,21 @@ def test_get_expenses_pagination(test_user, test_category):
 
 
 def test_get_all_expenses_only_returns_own_expenses(test_user, test_category):
+    """
+    Verify GET /expenses/ never leaks another user's expenses, regardless
+    of which filters are applied.
+
+    Args:
+        test_user: Fixture ensuring the authenticated test user (id=1) exists.
+        test_category: Fixture ensuring the test user has at least one
+            category, so there is data to contrast against the other user's.
+
+    Asserts:
+        - Response status is 200 OK.
+        - None of the returned expenses belong to the manually created
+          other_user, proving ownership scoping holds even though their
+          data exists in the same database.
+    """
     other_user = Users(
         email="other@gmail.com",
         username="other",
