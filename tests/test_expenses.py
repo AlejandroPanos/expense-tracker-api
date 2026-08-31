@@ -272,6 +272,18 @@ def test_get_expenses_summary(test_expense, test_category):
 
 
 def test_get_expense_by_id(test_expense):
+    """
+    Verify GET /expenses/{expense_id} returns a single expense by ID.
+
+    Args:
+        test_expense: Fixture that inserts a real Expense row before the
+            test runs.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The returned expense's id, amount, and description match
+          test_expense.
+    """
     response = client.get(f"/expenses/{test_expense.id}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["id"] == test_expense.id
