@@ -354,6 +354,19 @@ def test_get_expense_by_id_not_owner(test_expense):
 
 
 def test_update_expense_by_id(test_expense, test_category):
+    """
+    Verify PUT /expenses/{expense_id} updates an existing expense's fields.
+
+    Args:
+        test_expense: Fixture that inserts a real Expense row before the
+            test runs.
+        test_category: Fixture providing a valid category_id (owned by
+            the test user) to submit in the update.
+
+    Asserts:
+        - Response status is 200 OK.
+        - The returned expense reflects the updated amount and description.
+    """
     new_date = date.today().isoformat()
     response = client.put(
         f"/expenses/{test_expense.id}",
