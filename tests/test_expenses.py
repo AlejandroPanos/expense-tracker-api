@@ -292,6 +292,14 @@ def test_get_expense_by_id(test_expense):
 
 
 def test_get_expense_by_id_not_found():
+    """
+    Verify GET /expenses/{expense_id} returns 404 for an expense ID that
+    doesn't exist.
+
+    Asserts:
+        - Response status is 404 Not Found.
+        - The error detail confirms the expense was not found.
+    """
     response = client.get("/expenses/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Expense not found"
