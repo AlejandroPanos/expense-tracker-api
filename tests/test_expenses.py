@@ -306,6 +306,18 @@ def test_get_expense_by_id_not_found():
 
 
 def test_get_expense_by_id_not_owner(test_expense):
+    """
+    Verify GET /expenses/{expense_id} refuses access to an expense that
+    belongs to a different user, even with a valid ID.
+
+    Args:
+        test_expense: Fixture used only to ensure the surrounding
+            user/category setup exists (not the target of this test).
+
+    Asserts:
+        - Response status is 401 Unauthorized when requesting an expense
+          owned by a manually created other_user.
+    """
     other_user = Users(
         email="other@gmail.com",
         username="other",
