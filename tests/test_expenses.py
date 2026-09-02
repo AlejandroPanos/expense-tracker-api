@@ -383,6 +383,19 @@ def test_update_expense_by_id(test_expense, test_category):
 
 
 def test_update_expense_by_id_not_found(test_category):
+    """
+    Verify PUT /expenses/{expense_id} returns 404 for an expense ID that
+    doesn't exist.
+
+    Args:
+        test_category: Fixture providing a valid category_id to submit,
+            so the 404 is confirmed to come from the missing expense,
+            not a category validation failure.
+
+    Asserts:
+        - Response status is 404 Not Found.
+        - The error detail confirms the expense was not found.
+    """
     response = client.put(
         "/expenses/999",
         json={
