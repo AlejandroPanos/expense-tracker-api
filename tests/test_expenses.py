@@ -410,6 +410,18 @@ def test_update_expense_by_id_not_found(test_category):
 
 
 def test_update_expense_by_id_invalid_category(test_expense):
+    """
+    Verify PUT /expenses/{expense_id} rejects a category_id that doesn't
+    exist or doesn't belong to the current user, even when updating an
+    expense the user does own.
+
+    Args:
+        test_expense: Fixture that inserts a real Expense row the user owns.
+
+    Asserts:
+        - Response status is 404 Not Found.
+        - The error detail explains the category is missing or not owned.
+    """
     response = client.put(
         f"/expenses/{test_expense.id}",
         json={
