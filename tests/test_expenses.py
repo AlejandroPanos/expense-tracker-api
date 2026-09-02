@@ -436,6 +436,18 @@ def test_update_expense_by_id_invalid_category(test_expense):
 
 
 def test_delete_expense(test_expense):
+    """
+    Verify DELETE /expenses/{expense_id} removes the expense from the
+    database.
+
+    Args:
+        test_expense: Fixture that inserts a real Expense row before the
+            test runs.
+
+    Asserts:
+        - Response status is 200 OK with a success message.
+        - The expense row no longer exists in the database after deletion.
+    """
     response = client.delete(f"/expenses/{test_expense.id}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["message"] == "Expense deleted successfully"
