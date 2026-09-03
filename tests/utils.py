@@ -42,6 +42,13 @@ def override_get_db():
 
 
 def override_get_current_user():
+    """
+    Dependency override for get_current_user, used in every test file.
+
+    Returns:
+        dict: A fixed fake user payload (id=1, role="admin"), so tests can
+            call protected routes without going through real JWT login.
+    """
     return {"username": "alextest", "id": 1, "role": "admin"}
 
 
