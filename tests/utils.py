@@ -27,6 +27,13 @@ Base.metadata.create_all(bind=engine)
 
 
 def override_get_db():
+    """
+    Dependency override for get_db, used in every test file.
+
+    Yields:
+        Session: A session bound to the test database (TestingSessionLocal)
+            instead of the production database, so tests never touch real data.
+    """
     db = TestingSessionLocal()
     try:
         yield db
