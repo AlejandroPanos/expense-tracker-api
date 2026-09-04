@@ -90,6 +90,18 @@ def test_user():
 
 @pytest.fixture
 def test_category(test_user):
+    """
+    Insert a real Category row, owned by test_user, into the test database.
+
+    Args:
+        test_user: Fixture that ensures an owning user exists first.
+
+    Yields:
+        Category: The created category, with a real database-assigned id.
+
+    Teardown:
+        Deletes all rows from the categories table.
+    """
     category = Category(name="food", owner_id=test_user.id)
 
     db = TestingSessionLocal()
