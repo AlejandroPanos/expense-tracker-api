@@ -57,6 +57,16 @@ client = TestClient(app)
 
 @pytest.fixture
 def test_user():
+    """
+    Insert a real Users row into the test database, matching the id (1)
+    returned by override_get_current_user.
+
+    Yields:
+        Users: The created user, with a real database-assigned id.
+
+    Teardown:
+        Deletes all rows from the users table.
+    """
     user = Users(
         email="alex@gmail.com",
         username="alex",
