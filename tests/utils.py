@@ -117,6 +117,20 @@ def test_category(test_user):
 
 @pytest.fixture
 def test_expense(test_user, test_category):
+    """
+    Insert a real Expense row, owned by test_user and tied to test_category,
+    dated today.
+
+    Args:
+        test_user: Fixture that ensures an owning user exists first.
+        test_category: Fixture that ensures the referenced category exists first.
+
+    Yields:
+        Expense: The created expense, with a real database-assigned id.
+
+    Teardown:
+        Deletes all rows from the expenses table.
+    """
     expense = Expense(
         amount=500,
         description="A test expense",
