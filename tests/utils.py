@@ -152,6 +152,20 @@ def test_expense(test_user, test_category):
 
 @pytest.fixture
 def test_budget(test_user, test_category):
+    """
+    Insert a real Budget row, owned by test_user, for test_category, with a
+    monthly limit of 1000.
+
+    Args:
+        test_user: Fixture that ensures an owning user exists first.
+        test_category: Fixture that ensures the referenced category exists first.
+
+    Yields:
+        Budget: The created budget, with a real database-assigned id.
+
+    Teardown:
+        Deletes all rows from the budgets table.
+    """
     budget = Budget(
         owner_id=test_user.id, category_id=test_category.id, monthly_limit=1000
     )
