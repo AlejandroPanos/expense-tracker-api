@@ -183,6 +183,19 @@ def test_budget(test_user, test_category):
 
 @pytest.fixture(autouse=True)
 def cleanup():
+    """
+    Automatically run after every test in the suite, regardless of which
+    fixtures that test used.
+
+    Yields:
+        None: Runs the test first, then performs teardown.
+
+    Teardown:
+        Deletes all rows from expenses, budgets, categories, and users, in
+        child-before-parent order, so no leftover data from one test can
+        affect another (e.g. a stray expense blocking a later category
+        deletion test).
+    """
     yield
     with engine.connect() as connection:
         connection.execute(text("DELETE from expenses"))
