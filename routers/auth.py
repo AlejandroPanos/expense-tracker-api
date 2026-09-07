@@ -45,6 +45,14 @@ class Token(BaseModel):
 
 # Get the current session's db and get the dependency to pass onto each route that needs it
 def get_db():
+    """
+    Dependency that provides a database session for the duration of a request.
+
+    Yields:
+        Session: A SQLAlchemy session bound to the production database.
+            Always closed afterward via the finally block, even if the
+            request raises an exception.
+    """
     db = SessionLocal()
     try:
         yield db
