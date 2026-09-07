@@ -67,6 +67,19 @@ db_dependency = Annotated[Session, Depends(get_db)]
 ### Helpers ###
 ###############
 def authenticate_user(username: str, password: str, db):
+    """
+    Look up a user by username and verify their password against the
+    stored bcrypt hash.
+
+    Args:
+        username: The username submitted at login.
+        password: The plaintext password submitted at login.
+        db: An active database session.
+
+    Returns:
+        Users | bool: The matching Users row if the username exists and
+            the password is correct; False if either check fails.
+    """
     user = db.query(Users).filter(Users.username == username).first()
 
     if not user:
