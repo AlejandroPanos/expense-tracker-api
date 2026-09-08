@@ -111,6 +111,22 @@ def create_access_token(username: str, id: int, role: str, expire_delta: timedel
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+    """
+    Dependency that decodes and validates the bearer JWT on a protected
+    request, extracting the identity claims embedded in it.
+
+    Args:
+        token: The raw JWT string, automatically extracted from the
+            Authorization header by oauth2_bearer.
+
+    Returns:
+        dict: The decoded identity, shaped as
+            {"username": ..., "id": ..., "role": ...}.
+
+    Raises:
+        HTTPException: 401 Unauthorized if the token is malformed, expired,
+            has an invalid signature, or is missing the required claims.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
