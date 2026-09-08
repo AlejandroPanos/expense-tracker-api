@@ -92,6 +92,19 @@ def authenticate_user(username: str, password: str, db):
 
 
 def create_access_token(username: str, id: int, role: str, expire_delta: timedelta):
+    """
+    Build and sign a JWT access token for an authenticated user.
+
+    Args:
+        username: The user's username, embedded as the "sub" claim.
+        id: The user's database id, embedded as the "id" claim.
+        role: The user's role ("user" or "admin"), embedded as the
+            "role" claim.
+        expire_delta: How long from now the token should remain valid.
+
+    Returns:
+        str: The encoded, signed JWT.
+    """
     expire = datetime.now(timezone.utc) + expire_delta
     encode = {"sub": username, "id": id, "role": role, "exp": expire}
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
