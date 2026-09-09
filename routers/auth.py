@@ -150,6 +150,22 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
 ##############
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency, user: CreateUserRequest):
+    """
+    Register a new user account.
+
+    Args:
+        db: Database session dependency.
+        user: The registration payload (email, username, name, password,
+            phone number). Role and active status are set server-side,
+            never taken from client input.
+
+    Returns:
+        Users: The newly created user record.
+
+    Raises:
+        HTTPException: 400 Bad Request if the username or email is
+            already registered.
+    """
     existing_user = (
         db.query(Users)
         .filter((Users.username == user.username) | (Users.email == user.email))
