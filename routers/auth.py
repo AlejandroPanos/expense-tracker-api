@@ -199,6 +199,22 @@ async def create_user(db: db_dependency, user: CreateUserRequest):
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency
 ):
+    """
+    Authenticate a user and issue a JWT access token.
+
+    Args:
+        form_data: OAuth2 password-flow form data (username and password),
+            submitted as form fields rather than JSON.
+        db: Database session dependency.
+
+    Returns:
+        Token: A dict shaped as {"access_token": ..., "token_type": "bearer"},
+            valid for 20 minutes.
+
+    Raises:
+        HTTPException: 400 Bad Request if the username/password combination
+            is invalid.
+    """
     user = authenticate_user(form_data.username, form_data.password, db)
 
     if not user:
