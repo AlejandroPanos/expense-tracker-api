@@ -50,6 +50,22 @@ class UpdateBudgetRequest(BaseModel):
 async def create_budget(
     db: db_dependency, user: user_dependency, budget_request: CreateBudgetRequest
 ):
+    """
+    Create a monthly budget for one of the current user's categories.
+
+    Args:
+        db: Database session dependency.
+        user: The authenticated user, decoded from the JWT.
+        budget_request: The category to budget for and the monthly limit.
+
+    Returns:
+        Budget: The newly created budget record.
+
+    Raises:
+        HTTPException: 401 if the user is not authenticated.
+        HTTPException: 404 if the category does not exist or does not
+            belong to the current user.
+    """
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
