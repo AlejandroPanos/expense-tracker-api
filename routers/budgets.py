@@ -16,6 +16,14 @@ router = APIRouter(prefix="/budgets", tags=["budgets"])
 
 # Dependencies
 def get_db():
+    """
+    Dependency that provides a database session for the duration of a request.
+
+    Yields:
+        Session: A SQLAlchemy session bound to the production database.
+            Always closed afterward via the finally block, even if the
+            request raises an exception.
+    """
     db = SessionLocal()
     try:
         yield db
