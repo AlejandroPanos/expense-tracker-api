@@ -101,7 +101,7 @@ async def create_budget(
 async def get_budget_list(
     db: db_dependency, user: user_dependency, skip: int = 0, limit: int = 100
 ):
-"""
+    """
     List the current user's budgets, with pagination.
 
     Args:
