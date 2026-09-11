@@ -101,6 +101,21 @@ async def create_budget(
 async def get_budget_list(
     db: db_dependency, user: user_dependency, skip: int = 0, limit: int = 100
 ):
+"""
+    List the current user's budgets, with pagination.
+
+    Args:
+        db: Database session dependency.
+        user: The authenticated user, decoded from the JWT.
+        skip: Number of records to skip (offset), for pagination.
+        limit: Maximum number of records to return.
+
+    Returns:
+        list[Budget]: The user's budgets, possibly empty.
+
+    Raises:
+        HTTPException: 401 if the user is not authenticated.
+    """
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
