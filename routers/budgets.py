@@ -134,6 +134,23 @@ async def update_budget(
     budget_id: int,
     update_request: UpdateBudgetRequest,
 ):
+    """
+    Update the monthly limit on an existing budget.
+
+    Args:
+        db: Database session dependency.
+        user: The authenticated user, decoded from the JWT.
+        budget_id: The ID of the budget to update, from the URL path.
+        update_request: The new monthly limit.
+
+    Returns:
+        Budget: The updated budget record.
+
+    Raises:
+        HTTPException: 401 if the user is not authenticated, or does not
+            own the budget being updated.
+        HTTPException: 404 if no budget exists with the given ID.
+    """
     if user is None:
         raise HTTPException(status_code=401, detail="User not authorised")
 
